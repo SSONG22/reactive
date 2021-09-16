@@ -20,44 +20,7 @@ import java.util.stream.Stream;
 @Slf4j
 @RestController
 public class WebfluxDemoApplication {
-
-    @GetMapping("/event/{id}")
-    Mono<Event> hello(@PathVariable long id) {
-        return Mono.just(new Event(id, "event" + id));
-    }
-
-    @GetMapping("/events/{id}")
-    Mono<List<Event>> monoList(@PathVariable long id) {
-        List<Event> list = Arrays.asList(new Event(1L, "event1"), new Event(2L, "event2"));
-        return Mono.just(list);
-    }
-
-    @GetMapping("/events/flux")
-    Flux<Event> fluxEvents() {
-        return Flux.just(new Event(1L, "event1"), new Event(2L, "event2"));
-    }
-
-    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    Flux<Event> fluxEvents2() {
-        List<Event> list = Arrays.asList(new Event(1L, "event1"), new Event(2L, "event2"));
-        return Flux.fromIterable(list); // http stream 을 지원하는 것은 Flux 를 쓰면 편리하다.
-    }
-
-    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    Flux<Event> fluxEvents3() {
-        // rule 에 따라 generation
-        Stream<Event> s = Stream.generate(() -> new Event(System.currentTimeMillis(), "value"));
-        return Flux.fromStream(s).take(10);
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(WebfluxDemoApplication.class, args);
-    }
-
-    @Data
-    @AllArgsConstructor
-    public static class Event {
-        long id;
-        String value;
     }
 }
